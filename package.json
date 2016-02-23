@@ -1,0 +1,23 @@
+{
+  "name": "dropbox-tray",
+  "version": "0.0.0",
+  "author": "Gavin Lloyd <gavinhungry@gmail.com>",
+  "description": "A simple Dropbox tray icon using NW.js",
+  "license": "MIT",
+  "private": true,
+
+  "main": "index.html",
+  "window": {
+    "show": false
+  },
+
+  "dependencies": {
+    "underscore": "1.8.x",
+    "underscore.string": "3.2.x"
+  },
+
+  "dropbox": {
+    "bin": "dropbox-cli",
+    "info": ".dropbox/info.json"
+  }
+}
