@@ -1,3 +1,8 @@
+/**
+ * dropbox-tray - A simple Dropbox tray icon using NW.js
+ * https://github.com/gavinhungry/dropbox-tray
+ */
+
 (function() {
   'use strict';
 
