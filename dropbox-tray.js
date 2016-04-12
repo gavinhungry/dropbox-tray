@@ -134,7 +134,7 @@
   };
 
   dropbox.tray.on('click', function() {
-    gui.Shell.openItem(DROPBOX.DIR);
+    gui.Shell.showItemInFolder(path.join(DROPBOX.DIR, '/.dropbox'));
   });
 
   setInterval(function() {
