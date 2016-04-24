@@ -37,16 +37,17 @@
     ICON: {
       BUSY: resolve(pkg, 'dropbox.icons.busy') || 'img/busy.png',
       BUSY2: resolve(pkg, 'dropbox.icons.busy2') || 'img/busy2.png',
+      ERROR: resolve(pkg, 'dropbox.icons.error') || 'img/error.png',
       IDLE: resolve(pkg, 'dropbox.icons.idle') || 'img/idle.png',
-      OFFLINE: resolve(pkg, 'dropbox.icons.offline') ||  'img/offline.png',
-      ERROR: resolve(pkg, 'dropbox.icons.error') || 'img/error.png'
+      OFFLINE: resolve(pkg, 'dropbox.icons.offline') ||  'img/offline.png'
     },
 
     STATUS: {
       IDLE: 'Up to date',
-      UPLOADING: 'Uploading',
+      INDEXING: 'Indexing',
+      OFFLINE: 'Dropbox isn\'t running!',
       SYNCING: 'Syncing',
-      INDEXING: 'Indexing'
+      UPLOADING: 'Uploading'
     },
 
     DIR: (function() {
@@ -72,28 +73,18 @@
      * @param {String} option
      * @param {Array:String} [args]
      * @return {String}
-     * @throws
      */
-    cli: function(option, args) {
+    cli: _.memoize(function(option, args) {
       var command = _.str.sprintf('%s %s %s', DROPBOX.BIN, option, (args || []).join(' '));
-      return child_process.execSync(command).toString().trim();
-    },
 
-    /**
-     * Check if Dropbox is running or not
-     *
-     * Note: oddly exits with 0 when not running
-     *
-     * @return {Boolean} true if Dropbox is running, false otherwise
-     */
-    isRunning: function() {
       try {
-        this.cli('running');
-        return false;
+        return child_process.execSync(command).toString().trim();
       } catch(err) {
-        return true;
+        return null;
       }
-    },
+    }, function() {
+      return _.flatten(arguments).join(' ');
+    }),
 
     /**
      * Get an array of status messages
@@ -101,10 +92,6 @@
      * @return {Array:String}
      */
     getStatuses: function() {
-      if (!this.isRunning()) {
-        return [];
-      }
-
       return this.cli('status').split('\n');
     },
 
@@ -124,12 +111,28 @@
     },
 
     /**
+     * Check if Dropbox is running or not
+     *
+     * @return {Boolean} true if Dropbox is running, false otherwise
+     */
+    isRunning: function() {
+      return this.getStatus() !== DROPBOX.STATUS.OFFLINE;
+    },
+
+    /**
      * Check if Dropbox is busy or idle
      *
      * @return {Boolean} true if Dropbox is busy, false if Dropbox is idle
      */
     isBusy: function() {
       return this.isRunning() && this.getStatus() !== DROPBOX.STATUS.IDLE;
+    },
+
+    /**
+     * Flushes the cache of memoized functions
+     */
+    flush: function() {
+      this.cli.cache = {};
     }
   };
 
@@ -153,5 +156,9 @@
       dropbox.tray.icon = dropbox.isRunning() ? DROPBOX.ICON.IDLE : DROPBOX.ICON.OFFLINE;
     }
   }, 500);
+
+  setInterval(function() {
+    dropbox.flush();
+  }, 2000);
 
 })();
