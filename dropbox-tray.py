@@ -68,10 +68,10 @@ class DropboxTray:
     if not len (statuses):
       return 'Dropbox'
 
-    filtered = list(filter(lambda s:
-      str.startswith(s, self.Status.UPLOADING.value) or
-      str.startswith(s, self.Status.SYNCING.value) or
-      str.startswith(s, self.Status.INDEXING.value),
+    filtered = list(filter(lambda status:
+      str.startswith(status, self.Status.UPLOADING.value) or
+      str.startswith(status, self.Status.SYNCING.value) or
+      str.startswith(status, self.Status.INDEXING.value),
     statuses))
 
     return filtered[0] if len(filtered) else statuses[0]
