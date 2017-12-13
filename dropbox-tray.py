@@ -30,12 +30,13 @@ class DropboxTray:
     UPLOADING = 'Uploading'
 
   def __init__(self):
+    self.source = os.path.dirname(os.path.realpath(__file__))
     self.directory = self.getDirectory()
     self.initIcon()
     Gtk.main()
 
   def getDirectory(self):
-    return json.load(open('/home/gavin/.dropbox/info.json'))['personal']['path']
+    return json.load(open(os.path.expanduser('~/.dropbox/info.json')))['personal']['path']
 
   def openDirectory(self, widget):
     subprocess.Popen(['xdg-open', self.directory])
@@ -49,7 +50,7 @@ class DropboxTray:
 
   def setIcon(self, icon):
     self.icon.attr = icon
-    self.icon.set_from_file(icon.value)
+    self.icon.set_from_file(os.path.join(self.source, icon.value))
 
   def setTitle(self, title):
     if self.icon.get_tooltip_text() != title:
