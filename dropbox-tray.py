@@ -68,7 +68,7 @@ class DropboxTray:
   def getStatuses(self):
     now = time.time()
 
-    if (now - self.last) * 1000 > self.debounce:
+    if (now - self.last) * 1000 >= self.debounce:
       self.last = now
       self.statuses = list(filter(None, os.popen('dropbox-cli status').read().split('\n')))
 
