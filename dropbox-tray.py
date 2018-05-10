@@ -13,6 +13,7 @@ import json
 import os
 import signal
 import subprocess
+import time
 
 class DropboxTray:
   class Icon(Enum):
@@ -30,6 +31,10 @@ class DropboxTray:
     UPLOADING = 'Uploading'
 
   def __init__(self):
+    self.interval = 500  # update the UI every (ms)
+    self.debounce = 5000 # call dropbox-cli every (ms)
+    self.last = 0
+
     self.source = os.path.dirname(os.path.realpath(__file__))
     self.directory = self.getDirectory()
     self.initIcon()
@@ -45,12 +50,13 @@ class DropboxTray:
     self.icon = Gtk.StatusIcon()
     self.setIcon(self.Icon.OFFLINE)
     self.icon.connect('activate', self.openDirectory)
-    self.icon.timeout = GObject.timeout_add(500, self.update)
+    self.icon.timeout = GObject.timeout_add(self.interval, self.update)
     self.icon.set_visible(True)
 
   def setIcon(self, icon):
-    self.icon.attr = icon
-    self.icon.set_from_file(os.path.join(self.source, icon.value))
+    if not hasattr(self.icon, 'attr') or self.icon.attr != icon:
+      self.icon.attr = icon
+      self.icon.set_from_file(os.path.join(self.source, icon.value))
 
   def setTitle(self, title):
     if self.icon.get_tooltip_text() != title:
@@ -60,7 +66,13 @@ class DropboxTray:
     self.setIcon(self.Icon.BUSY2 if self.icon.attr == self.Icon.BUSY else self.Icon.BUSY)
 
   def getStatuses(self):
-    return list(filter(None, os.popen('dropbox-cli status').read().split('\n')))
+    now = time.time()
+
+    if (now - self.last) * 1000 > self.debounce:
+      self.last = now
+      self.statuses = list(filter(None, os.popen('dropbox-cli status').read().split('\n')))
+
+    return self.statuses
 
   def getStatus(self):
     statuses = self.getStatuses()
