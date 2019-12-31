@@ -6,7 +6,7 @@
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GLib
 
 from enum import Enum
 import json
@@ -50,7 +50,7 @@ class DropboxTray:
     self.icon = Gtk.StatusIcon()
     self.setIcon(self.Icon.OFFLINE)
     self.icon.connect('activate', self.openDirectory)
-    self.icon.timeout = GObject.timeout_add(self.interval, self.update)
+    self.icon.timeout = GLib.timeout_add(self.interval, self.update)
     self.icon.set_visible(True)
 
   def setIcon(self, icon):
