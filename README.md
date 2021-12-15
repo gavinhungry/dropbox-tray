@@ -10,7 +10,7 @@ Usage
 Attributions
 ------------
 The default icons found in `icons/` are from
-[Faenza Icons](https://tiheum.deviantart.com/art/Faenza-Icons-173323228).
+[Vimix Icon Theme](https://github.com/vinceliuice/vimix-icon-theme).
 
 License
 -------
