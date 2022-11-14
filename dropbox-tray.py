@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # dropbox-tray: Dropbox tray icon
 # https://github.com/gavinhungry/dropbox-tray
